@@ -15,6 +15,8 @@
 
 #include "huffman.h"
 
+#define BITS2BYTES(b) ((b >> 3) + !!(b & 7))
+
 int main(int argc, char *argv[]) {
   huffman_t * huffman;
   unsigned short hufftable[HUFFMAN_TABLESIZE] = { 0 };
@@ -38,11 +40,11 @@ int main(int argc, char *argv[]) {
   encbuf = (unsigned char *)malloc(enclen);
   encreal = huffman_encode(huffman, encbuf, test_string, (int)strlen(test_string));
 
-  printf("huffman encode length: %i\n", ((encreal / 8) + !!(encreal % 8)));
+  printf("huffman encode length: %i\n", BITS2BYTES(encreal));
 
   printf("huffman encode data: ");
-  for (i = 0; i < ((encreal / 8) + !!(encreal % 8)); ++i)
-      printf("%02x ", encbuf[i]);
+  for (i = 0; i < BITS2BYTES(encreal); ++i)
+    printf("%02x ", encbuf[i]);
   printf("\n");
 
   declen = huffman_declen(huffman, encreal);
@@ -53,7 +55,7 @@ int main(int argc, char *argv[]) {
 
   printf("huffman decode data: ");
   for (i = 0; i < decreal; ++i)
-      printf("%02x ", decbuf[i]);
+    printf("%02x ", decbuf[i]);
   printf("\n");
 
   free(encbuf);
